@@ -21,6 +21,9 @@ final class Session {
     // A tick the phone has not confirmed after this long is given up on: the phone dropped it,
     // or the set was unticked there.
     static final long PENDING_MS = 120_000;
+    // lib/watch-snapshot.js WATCH_FRESH_MS: a tick the phone hears of later than this is logged
+    // there without the rest it earns, and a rest skipped or lengthened that late is ignored.
+    static final long FRESH_MS = 15_000;
 
     static final class SetRow {
         boolean done;
@@ -59,6 +62,22 @@ final class Session {
         long endsAt;   // 0 while paused
         int total;
         int left;      // seconds, while paused
+        // Started here by the tick made at `tickAt`, not taken from the phone's snapshot.
+        boolean local;
+        long tickAt;
+    }
+
+    /**
+     * The rest to time once a snapshot from the phone arrived: the phone's own whenever it has one.
+     * Without one, the rest started here stays while a tick is still on its way, and also when the
+     * phone heard of the tick too late to start the rest itself (FRESH_MS): it logged the set
+     * quietly, and the rest that set earns is still the one running here, until it runs out.
+     */
+    static Rest restAfterSnapshot(Rest current, Rest phone, boolean pendingEmpty, long now) {
+        if (phone != null) return phone;
+        if (!pendingEmpty) return current;
+        if (current != null && current.local && current.endsAt > now && now - current.tickAt > FRESH_MS) return current;
+        return null;
     }
 
     /** A tick sent to the phone and not yet seen in a snapshot from it. */

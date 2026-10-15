@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -103,6 +104,52 @@ public class SessionTest {
         // Given up on after a while, and never carried to another workout.
         assertTrue(Session.parse(SNAP).keepPending(pending, 7000 + Session.PENDING_MS + 1).isEmpty());
         assertTrue(Session.parse(SNAP.replace("\"sid\":\"s1\"", "\"sid\":\"s2\"")).keepPending(pending, 8000).isEmpty());
+    }
+
+    private static Session.Rest localRest(long tickAt, int sec) {
+        Session.Rest r = new Session.Rest();
+        r.total = sec;
+        r.endsAt = tickAt + sec * 1000L;
+        r.local = true;
+        r.tickAt = tickAt;
+        return r;
+    }
+
+    @Test
+    public void followsThePhonesRestWheneverItHasOne() {
+        Session.Rest phone = new Session.Rest();
+        phone.total = 90;
+        phone.endsAt = 100_000;
+        assertSame(phone, Session.restAfterSnapshot(localRest(0, 90), phone, true, 5_000));
+        assertSame(phone, Session.restAfterSnapshot(null, phone, false, 5_000));
+    }
+
+    @Test
+    public void keepsTheWatchRestWhileATickIsOnItsWay() {
+        Session.Rest mine = localRest(0, 90);
+        assertSame(mine, Session.restAfterSnapshot(mine, null, false, 5_000));
+    }
+
+    @Test
+    public void keepsTheWatchRestWhenThePhoneHeardOfTheTickTooLate() {
+        // Ticked at 0 with the phone asleep; the phone woke at 30 s, logged the set without a
+        // rest and published none. 60 s of the 90 are still to go here.
+        Session.Rest mine = localRest(0, 90);
+        assertSame(mine, Session.restAfterSnapshot(mine, null, true, 30_000));
+        // And stays through the phone's later snapshots until it runs out.
+        assertSame(mine, Session.restAfterSnapshot(mine, null, true, 80_000));
+        assertNull(Session.restAfterSnapshot(mine, null, true, 90_000));
+    }
+
+    @Test
+    public void dropsTheRestWhenThePhoneHeardInTimeAndTimesNone() {
+        // Heard within FRESH_MS: the phone decided there is no rest (it ran its own toggle).
+        assertNull(Session.restAfterSnapshot(localRest(0, 90), null, true, 3_000));
+        // The phone's own rest, ended or skipped there.
+        Session.Rest phones = localRest(0, 90);
+        phones.local = false;
+        assertNull(Session.restAfterSnapshot(phones, null, true, 30_000));
+        assertNull(Session.restAfterSnapshot(null, null, true, 30_000));
     }
 
     @Test
