@@ -32,6 +32,8 @@ final class WatchState {
     static final int NOTIFY_STARTED = 1;
     private static final String PREFS = "opengym-wear";
     private static final String KEY_SNAPSHOT = "snapshot";
+    // How soon a send that did not reach the phone is tried again.
+    private static final long RETRY_MS = 5_000;
 
     private static WatchState instance;
 
@@ -42,6 +44,9 @@ final class WatchState {
     private List<Session.Tick> pending = new ArrayList<>();
     // The rest being timed: from the phone's snapshot, or started here by a tick.
     private Session.Rest rest;
+    // Ticks and rest changes on their way to the phone, kept until one of its nodes takes them.
+    private final Outbox outbox = new Outbox();
+    private boolean sending;
 
     static synchronized WatchState get(Context ctx) {
         if (instance == null) {
@@ -90,9 +95,7 @@ final class WatchState {
             long now = System.currentTimeMillis();
             if (next != null) {
                 pending = next.keepPending(pending, now);
-                if (next.rest != null) rest = next.rest;
-                // The phone has heard of every tick and times no rest: there is none.
-                else if (pending.isEmpty()) rest = null;
+                rest = Session.restAfterSnapshot(rest, next.rest, pending.isEmpty(), now);
             } else {
                 pending = new ArrayList<>();
                 rest = null;
@@ -102,6 +105,8 @@ final class WatchState {
             prefs(ctx).edit().putString(KEY_SNAPSHOT, lastJson).apply();
             armAlarm(ctx, now);
         }
+        // The phone just spoke: it is in reach for whatever is still waiting.
+        flush(ctx);
         if (started) notifyStarted(ctx);
         if (ended) {
             ctx.getSystemService(NotificationManager.class).cancel(NOTIFY_STARTED);
@@ -126,11 +131,14 @@ final class WatchState {
                 Session.Rest r = new Session.Rest();
                 r.total = sec;
                 r.endsAt = now + sec * 1000L;
+                r.local = true;
+                r.tickAt = now;
                 rest = r;
             }
             armAlarm(ctx, now);
         }
-        Link.send(ctx, t.toJson(), null);
+        // Worth sending for as long as the watch shows it as pending (Session.keepPending).
+        send(ctx, t.toJson(), Session.PENDING_MS);
         changed();
         return true;
     }
@@ -141,7 +149,7 @@ final class WatchState {
             rest = null;
             RestAlarm.cancel(ctx);
         }
-        Link.send(ctx, event("skip"), null);
+        send(ctx, event("skip"), Session.FRESH_MS);
         changed();
     }
 
@@ -153,7 +161,7 @@ final class WatchState {
             rest.total += 15;
             armAlarm(ctx, System.currentTimeMillis());
         }
-        Link.send(ctx, event("add"), null);
+        send(ctx, event("add"), Session.FRESH_MS);
         changed();
     }
 
@@ -163,6 +171,31 @@ final class WatchState {
             if (rest != null && rest.endsAt > 0 && rest.endsAt <= System.currentTimeMillis() + 1000) rest = null;
         }
         changed();
+    }
+
+    private void send(Context ctx, String json, long keepMs) {
+        outbox.add(json, System.currentTimeMillis(), keepMs);
+        flush(ctx);
+    }
+
+    // Sends what waits in the outbox, one at a time and in order. What the phone does not take is
+    // tried again in a moment, until it is taken or no longer worth sending.
+    private void flush(Context ctx) {
+        String json;
+        synchronized (this) {
+            if (sending) return;
+            json = outbox.peek(System.currentTimeMillis());
+            if (json == null) return;
+            sending = true;
+        }
+        Link.send(ctx, json, sent -> {
+            synchronized (this) {
+                sending = false;
+                if (sent) outbox.delivered(json);
+            }
+            if (sent) flush(ctx);
+            else main.postDelayed(() -> flush(ctx), RETRY_MS);
+        });
     }
 
     // Inside the lock.
