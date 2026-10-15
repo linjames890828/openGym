@@ -207,6 +207,7 @@ export default {
   '+ Burst': '+ Burst',
   '+ Drop': '+ Dropszett',
   'Cardio logged': 'Kardió rögzítve',
+  '♥ {0} bpm avg · {1} max': '♥ átlag {0} bpm · max. {1}',
   'Discard workout?': 'Elveted az edzést?',
   'The sets you logged in this session will be lost.': 'Az ebben az edzésben rögzített sorozatok elvesznek.',
   'Superset {0} / {1}': 'Szuperszett {0} / {1}',

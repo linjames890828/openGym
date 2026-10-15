@@ -78,6 +78,18 @@
                 android:value="Shows how long is left in the rest between sets." />
         </service>
 
+        <!-- Wear OS watch (WatchPlugin): Play services starts this for what the watch app sends, a
+             set ticked or heart-rate samples, even while the app is closed. Only messages on
+             openGym's own paths reach it. -->
+        <service
+            android:name=".WatchListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/opengym" />
+            </intent-filter>
+        </service>
+
         <!-- Gym check-in scanner (@capacitor-mlkit/barcode-scanning): pre-fetch the ML Kit
              barcode model at install time so the first scan doesn't wait on a download. -->
         <meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="barcode_ui" />

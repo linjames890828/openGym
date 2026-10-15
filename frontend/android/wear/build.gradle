@@ -1,0 +1,40 @@
+// The Wear OS watch app (docs/MOBILE.md "Wear OS watch"). It shows the workout running on the
+// phone, ticks sets, times the rest and records heart rate; the phone app keeps the log. Java and
+// plain views, like the phone shell, and one library: Play services' Wearable Data Layer, the only
+// way a watch app talks to its phone app.
+apply plugin: 'com.android.application'
+
+android {
+    // Its own namespace for R and BuildConfig, but the phone app's applicationId: the Data Layer
+    // only connects two apps with the same package name and the same signing key.
+    namespace "ch.duartesantos.opengym.wear"
+    compileSdk rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "ch.duartesantos.opengym"
+        // Wear OS 4 (Android 13) and later: every Galaxy Watch from the Watch4 on runs it or newer.
+        minSdkVersion 33
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+        debug {
+            // Pairs with the phone's debug build, which has the same suffix (app/build.gradle).
+            applicationIdSuffix ".test"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "com.google.android.gms:play-services-wearable:$playServicesWearableVersion"
+    testImplementation "junit:junit:$junitVersion"
+    // Session parses the phone's JSON with org.json, which the JVM tests do not have.
+    testImplementation "org.json:json:20240303"
+}

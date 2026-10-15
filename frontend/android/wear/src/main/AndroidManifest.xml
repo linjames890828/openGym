@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.hardware.type.watch" />
+
+    <!-- Heart rate during a workout (HeartService), asked for the first time a workout reaches the
+         watch. On Android 16 (Wear OS 6) and later the system grants it as heart-rate access for
+         an app that targets 35, as this one does. -->
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <!-- HeartService keeps reading with the screen off: a foreground service of the health type. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- The buzz at the end of a rest (RestAlarm). The exact alarm is used where it is granted;
+         otherwise the alarm may come a few seconds late, never early. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault">
+
+        <!-- It shows the phone's workout and does nothing without it. -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- The phone's workout as it changes, and the phone's app sending nothing more once the
+             workout ends: Play services starts this for it even while the watch app is closed. -->
+        <service
+            android:name=".WearListener"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data android:scheme="wear" android:host="*" android:path="/opengym/session" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".HeartService"
+            android:exported="false"
+            android:foregroundServiceType="health" />
+
+        <!-- Rest over. Explicit class, no intent-filter: only this app can send it. -->
+        <receiver
+            android:name=".RestAlarm$Receiver"
+            android:exported="false" />
+    </application>
+</manifest>

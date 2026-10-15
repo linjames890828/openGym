@@ -205,6 +205,7 @@ export default {
   'Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.': '每組皆轉為遞減組：在主組完成後，不休息接著做 {0} 次遞減，每次重量減輕約 {1}%。',
   'Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.': '每組皆轉為休息暫停組：先做 {0} 下，接著分為短組再做 {1} 下，每次短組前休息 {2} 秒，每次次數約減半。',
   'Cardio logged': '有氧運動已記錄',
+  '♥ {0} bpm avg · {1} max': '♥ 平均 {0} bpm · 最高 {1}',
   'Discard workout?': '捨棄本次訓練？',
   'The sets you logged in this session will be lost.': '本次訓練已記錄的組數將全數遺失。',
   'Superset {0} / {1}': '超級組 {0} / {1}',

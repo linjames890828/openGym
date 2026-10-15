@@ -1,4 +1,6 @@
 include ':app'
+// The Wear OS watch app. Built on its own: `./gradlew :wear:assembleDebug` (docs/MOBILE.md).
+include ':wear'
 include ':capacitor-cordova-android-plugins'
 project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
 

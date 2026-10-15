@@ -10,6 +10,7 @@ import { armRestAlert, bindNativeRest, disarmRestAlert, holdRestAlert, toneNativ
 import { useStore } from './useStore.js'
 import { REST_MAX } from '../lib/duration.js'
 import { accentValue } from '../lib/accent.js'
+import { initWatchSync } from '../lib/watch-sync.js'
 
 // Fire-and-forget: lets the server push a "rest over" alert if this tab gets suspended
 // before the local timer completes. No-ops for guests / offline. The device id keeps the
@@ -540,3 +541,7 @@ bindNativeRest(ev => {
   const total = Math.max(left, Math.round((ev.totalMs || 0) / 1000))
   useUI.getState().followNativeRest({ endsAt: ev.endsAt, left, total, paused: !!ev.paused })
 })
+
+// The Wear OS watch (lib/watch-sync.js): the running workout and its rest go to it, and what is
+// done on it comes back. Started here, where both stores exist.
+initWatchSync({ store: useStore, ui: useUI })

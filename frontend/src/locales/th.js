@@ -207,6 +207,7 @@ export default {
   'Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.': 'ทุกเซ็ตจะกลายเป็นดรอปเซ็ต: หลังเซ็ตหลักจะมี {0} ดรอปโดยไม่พัก แต่ละดรอปเบาลงประมาณ {1}%',
   'Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.': 'ทุกเซ็ตจะกลายเป็นเรสต์-พอส: เริ่มด้วย {0} ครั้ง จากนั้นอีก {1} ครั้งแบ่งเป็นชุดสั้น ๆ พัก {2} วินาทีก่อนแต่ละชุด โดยลดลงเกือบครึ่งทุกครั้ง',
   'Cardio logged': 'บันทึกคาร์ดิโอแล้ว',
+  '♥ {0} bpm avg · {1} max': '♥ เฉลี่ย {0} bpm · สูงสุด {1}',
   'Discard workout?': 'ทิ้งการออกกำลังกายนี้?',
   'The sets you logged in this session will be lost.': 'เซ็ตที่บันทึกไว้ในรอบนี้จะหายไป',
   'Superset {0} / {1}': 'ซูเปอร์เซ็ต {0} / {1}',

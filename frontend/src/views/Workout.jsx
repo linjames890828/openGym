@@ -44,6 +44,7 @@ import { isWarmupRow, isFailureSet, toggleFailure, isDropSet, isRestPauseSet, dr
 import { canMoveActiveWorkoutUnit, moveActiveWorkoutUnit, canMoveActiveWorkoutEntry, moveActiveWorkoutEntry } from '../lib/active-workout-order.js'
 import { nextOpenSet, workoutKeyAction } from '../lib/workout-keys.js'
 import { MUSCLE_NAME } from '../lib/muscles.js'
+import { bindWatchToggle } from '../lib/watch-sync.js'
 import FocusView from './FocusView.jsx'
 import { withMeaning, historyAs, dbLoadFor, entryDbLoad, bellsIn, ownedWeightsFor, stepOwned } from '../lib/dumbbells.js'
 
@@ -1740,6 +1741,12 @@ function ActiveWorkout() {
       onFocusProgress?.({ unitDone: freshUnitDone })
     }
   }
+
+  // A set ticked on the watch (lib/watch-sync.js) goes through this same toggle while the screen is
+  // up, so it starts the rest and moves on exactly as a tap here does.
+  const toggleRef = useRef(toggle)
+  toggleRef.current = toggle
+  useEffect(() => bindWatchToggle((idx, i, side) => toggleRef.current(idx, i, side)), [])
 
   // After the finished exercise folded away (toggle, above): the new current one is the next thing
   // to do, so if it now sits under the header or low on the screen with little more than its title
