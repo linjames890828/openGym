@@ -11,10 +11,12 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <!-- The buzz at the end of a rest (RestAlarm). The exact alarm is used where it is granted;
-         otherwise the alarm may come a few seconds late, never early. -->
+    <!-- The buzz at the end of a rest (RestAlarm), on time with the watch dozing. From Android 14
+         (Wear OS 5) SCHEDULE_EXACT_ALARM is no longer granted at install, and an inexact alarm can
+         wait minutes in doze; USE_EXACT_ALARM is granted at install on every version this app runs
+         on (Android 13 and up) to an app whose job includes a timer, as a rest countdown is. -->
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application

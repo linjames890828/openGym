@@ -24,8 +24,17 @@ final class RestAlarm {
         AlarmManager am = ctx.getSystemService(AlarmManager.class);
         if (am == null) return;
         PendingIntent pi = intent(ctx);
-        if (am.canScheduleExactAlarms()) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
-        else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+        // USE_EXACT_ALARM (AndroidManifest.xml) makes this the exact one; the inexact fallback is
+        // for a system that took it away anyway.
+        try {
+            if (am.canScheduleExactAlarms()) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+                return;
+            }
+        } catch (SecurityException ignored) {
+            // Revoked between the check and the call.
+        }
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
     }
 
     static void cancel(Context context) {

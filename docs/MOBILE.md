@@ -242,7 +242,12 @@ does both, and has to be installed and paired with the watch.
 - **A frozen phone page:** with the phone in a pocket the WebView is frozen, so the watch never
   waits on it. A tick goes on the watch's screen at once and stays there until a snapshot from the
   phone shows it (`Session.keepPending`). The watch times the rest that set earns itself; the
-  snapshot carries each set's rest, from `supersetFlow.js`. On the phone the event waits in a
+  snapshot carries each set's rest, from `supersetFlow.js`. When the phone hears of the tick too
+  late to start that rest, the watch keeps timing its own until it runs out
+  (`Session.restAfterSnapshot`). What the watch sends waits in an outbox (`Outbox`) and is tried
+  again every few seconds until the phone takes it: a tick for as long as it shows as pending, a
+  Skip or +15 s for 15 s. The rest buzz uses an exact alarm (`USE_EXACT_ALARM`), so it comes on
+  time with the watch dozing. On the phone the event waits in a
   queue (`WatchInbox`, in the app's preferences) until the page runs and takes it
   (`lib/watch-sync.js`). A tick taken within 15 s goes through the workout screen's own toggle:
   the rest, the next exercise, the "complete" sheet. An older one only marks the set, the way a
@@ -261,7 +266,8 @@ does both, and has to be installed and paired with the watch.
   `adb connect <watch-ip>:<port>` and `adb -s <watch> install wear-release.apk`. The CI APK job
   builds `:app` only; the watch APK is not part of a release yet.
 - **Tests:** `./gradlew :wear:testDebugUnitTest` runs `SessionTest`, which parses the phone's
-  snapshot and covers ticks, per-side rows and pending ticks. The phone's side is pinned by
+  snapshot and covers ticks, per-side rows, pending ticks and which rest a snapshot leaves running;
+  `OutboxTest` (sends kept and retried in order); and `ManifestTest` (the exact-alarm permission). The phone's side is pinned by
   `watch-snapshot.test.js` and `watch-sync.test.js`.
 
 Worth checking on real hardware after changes here, since no test runs Play services: a workout
