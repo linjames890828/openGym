@@ -188,6 +188,45 @@ describe('localized month names', () => {
   })
 })
 
+// Hevy set to Chinese writes "2026年10月13日 下午1:15": a 12-hour clock behind a period word.
+// None of the patterns above reach it, so every row of such an export was skipped.
+describe('Chinese and Japanese dates', () => {
+  it('reads the day and turns the 12-hour clock into 24 hours', () => {
+    expect(parseWhen('2026年10月13日 中午12:13')).toEqual({ d: '2026-10-13', t: 43980000 })   // 12:13
+    expect(parseWhen('2026年10月13日 中午1:05')).toEqual({ d: '2026-10-13', t: 47100000 })    // 13:05
+    expect(parseWhen('2026年10月13日 中午11:30')).toEqual({ d: '2026-10-13', t: 41400000 })   // 11:30
+    expect(parseWhen('2026年10月13日 下午1:15')).toEqual({ d: '2026-10-13', t: 47700000 })    // 13:15
+    expect(parseWhen('2025年10月10日 晚上8:05')).toEqual({ d: '2025-10-10', t: 72300000 })    // 20:05
+    expect(parseWhen('2025年10月10日 上午9:00')).toEqual({ d: '2025-10-10', t: 32400000 })    // 09:00
+    expect(parseWhen('2025年10月10日 上午12:30')).toEqual({ d: '2025-10-10', t: 1800000 })    // 00:30
+    expect(parseWhen('2025年10月10日 凌晨12:30')).toEqual({ d: '2025-10-10', t: 1800000 })    // 00:30
+    expect(parseWhen('2025年10月10日 午後3:00')).toEqual({ d: '2025-10-10', t: 54000000 })    // 15:00
+    expect(parseWhen('2025年10月10日 18:30')).toEqual({ d: '2025-10-10', t: 66600000 })       // 18:30
+    expect(parseWhen('2025年8月3日')).toEqual({ d: '2025-08-03', t: null })
+  })
+
+  it('still refuses a day that does not exist', () => {
+    expect(parseWhen('2025年2月30日 下午1:00')).toBe(null)
+    expect(parseWhen('2025年13月1日')).toBe(null)
+  })
+
+  it('imports a Chinese Hevy export whole, one workout per start time', () => {
+    const csv = [
+      'title,start_time,end_time,exercise_title,set_index,set_type,weight_kg,reps',
+      '腿,"2025年10月10日 中午12:13","2025年10月10日 下午1:15",Squat (Barbell),0,normal,60,6',
+      '腿,"2025年10月10日 中午12:13","2025年10月10日 下午1:15",Squat (Barbell),1,normal,80,5',
+      '胸,"2025年10月10日 晚上7:00","2025年10月10日 晚上8:00",Bench Press (Barbell),0,normal,60,8',
+    ].join('\n')
+    const parsed = parseWorkoutCSV(csv, { unit: 'kg' })
+
+    expect(parsed.source).toBe('Hevy')
+    expect(parsed.skipped).toBe(0)
+    expect(parsed.sets).toBe(3)
+    expect(parsed.workouts).toHaveLength(2)   // same day, two start times
+    expect(parsed.from).toBe('2025-10-10')
+  })
+})
+
 // Strong's current export (GitHub #394): ';'-separated, "Workout #" in front of the name, the
 // workout's length in seconds and distances in meters.
 const STRONG_NEW = [

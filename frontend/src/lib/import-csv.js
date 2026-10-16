@@ -390,6 +390,19 @@ export function parseWhen(s) {
   m = v.match(/^(\p{L}{3,})\.?\s+(\d{1,2}),?\s+(\d{4})(?:,?\s+(\d{1,2}):(\d{2}))?/u)
   mon = m && monthOf(m[1])
   if (mon) return calendarDay(m[3], mon, m[2], m[4], m[5])
+  // Chinese / Japanese: "2026年10月13日 下午1:15". The period word carries the half of a
+  // 12-hour clock; 中午 spans noon, so its 12 stays 12 and its 1 is 13.
+  m = v.match(/^(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日(?:\s*(凌晨|早上|上午|中午|下午|晚上|午前|午後)?\s*(\d{1,2}):(\d{2}))?/)
+  if (m) {
+    let h = m[5]
+    if (h !== undefined && m[4]) {
+      h = +h
+      const pm = /下午|晚上|午後/.test(m[4]) || (m[4] === '中午' && h < 11)
+      if (pm && h < 12) h += 12
+      else if (!pm && h === 12 && m[4] !== '中午') h = 0
+    }
+    return calendarDay(m[1], m[2], m[3], h, m[6])
+  }
   // Day-first when ambiguous: FitNotes/Strong/Hevy all write unambiguous dates, so a
   // bare numeric one came through a spreadsheet, and those are usually European.
   m = v.match(/^(\d{1,2})[/.](\d{1,2})[/.](\d{4})(?:[, ]+(\d{1,2}):(\d{2}))?/)
