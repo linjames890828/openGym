@@ -52,6 +52,10 @@ dependencies {
     // user turns it on. 1.1.0-alpha12 is the last release that builds with compileSdk 35 and AGP
     // 8.7; 1.1.0 stable asks for compileSdk 36 and AGP 8.9.1.
     implementation "androidx.health.connect:connect-client:$healthConnectVersion"
+    // The Wear OS watch app (WatchPlugin, wear/): the running workout goes to the watch and what is
+    // done on it comes back over the Wearable Data Layer. Nothing is sent unless a watch with
+    // openGym on it is paired.
+    implementation "com.google.android.gms:play-services-wearable:$playServicesWearableVersion"
     implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"

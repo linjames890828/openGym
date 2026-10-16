@@ -212,6 +212,7 @@ export default {
   'Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.': 'كل مجموعة تصبح دروب سِت: بعد المجموعة الأساسية، {0} دروب بدون راحة، كل واحد أخف بنحو {1}%.',
   'Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.': 'كل مجموعة تصبح ريست بوز: {0} تكرارات في البداية، ثم {1} تكرارات إضافية موزعة على دفعات قصيرة، مع {2} ثانية راحة قبل كل دفعة، وتنخفض تقريبًا إلى النصف في كل مرة.',
   'Cardio logged': 'تم تسجيل تمرين الكارديو',
+  '♥ {0} bpm avg · {1} max': '♥ متوسط {0} نبضة/د · الأقصى {1}',
   'Discard workout?': 'تجاهل التمرين؟',
   'The sets you logged in this session will be lost.': 'ستُفقد المجموعات التي سجلتها في هذه الجلسة.',
   'Superset {0} / {1}': 'سوبر سِت {0} / {1}',

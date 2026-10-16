@@ -218,6 +218,64 @@ Worth checking on a real device after changes here: turning it on shows Health C
 permission screen; a finished workout appears in Health Connect within a few seconds; deleting it
 in openGym removes it there; turning it off with "remove" leaves no openGym record behind.
 
+### Wear OS watch (Android)
+
+`frontend/android/wear/` is a separate watch app for Wear OS 4 and later (Galaxy Watch4 and
+newer, Pixel Watch). It follows the workout running in the phone app: the current exercise and set,
+a **Done** button, the rest countdown with **Skip** and **+15 s**, and the heart rate from the
+watch's sensor. It can't start or finish a workout, and it keeps no log of its own. The phone app
+does both, and has to be installed and paired with the watch.
+
+- **Using it:** start a workout on the phone. The watch shows a "Workout started" notification;
+  tap it, or open openGym from the watch's app list. The first time, the watch asks for body
+  sensors (heart rate) and notifications. ‹ › or the rotating bezel/crown move between exercises.
+  Done ticks the next open set of the exercise on screen, a per-side set one side at a time. The
+  rest buzzes on the wrist with the screen off.
+- **What travels:** the phone publishes the running workout as one Wearable Data Layer item
+  (`/opengym/session`): names, numbers, ticks and the rest timer, built by
+  `src/lib/watch-snapshot.js`. It deletes the item when the workout ends. The watch sends what is
+  done on it as messages (`/opengym/event`): a set ticked, the rest skipped or lengthened, and
+  heart-rate batches every 30 seconds. All of it goes through Google Play services on both devices,
+  normally over Bluetooth. If the watch is on Wi-Fi or LTE away from the phone, Play services can
+  relay it through Google's cloud. Nothing is published unless a watch with openGym on it is paired
+  (the `opengym_wear` capability), so a phone without a watch sends nothing.
+- **A frozen phone page:** with the phone in a pocket the WebView is frozen, so the watch never
+  waits on it. A tick goes on the watch's screen at once and stays there until a snapshot from the
+  phone shows it (`Session.keepPending`). The watch times the rest that set earns itself; the
+  snapshot carries each set's rest, from `supersetFlow.js`. When the phone hears of the tick too
+  late to start that rest, the watch keeps timing its own until it runs out
+  (`Session.restAfterSnapshot`). What the watch sends waits in an outbox (`Outbox`) and is tried
+  again every few seconds until the phone takes it: a tick for as long as it shows as pending, a
+  Skip or +15 s for 15 s. The rest buzz uses an exact alarm (`USE_EXACT_ALARM`), so it comes on
+  time with the watch dozing. On the phone the event waits in a
+  queue (`WatchInbox`, in the app's preferences) until the page runs and takes it
+  (`lib/watch-sync.js`). A tick taken within 15 s goes through the workout screen's own toggle:
+  the rest, the next exercise, the "complete" sheet. An older one only marks the set, the way a
+  hold that ends off screen does.
+- **Heart rate:** read by a foreground service of the health type (`HeartService`). Android only
+  lets the visible app start one, so it starts when the watch screen opens during a workout and
+  stops when the workout ends. The phone keeps only `{ n, avg, min, max }` on the workout as `hr`
+  (`src/lib/heart-rate.js`); no series of samples is stored or synced. The workout detail shows it
+  as "♥ avg · max". A batch that lands after the finish is added to that saved workout.
+- **Pairing requirement:** the Data Layer only connects apps with the same applicationId and the
+  same signing key. The watch app's applicationId is `ch.duartesantos.opengym`, the phone app's,
+  and its debug build carries the same `.test` suffix. Sign both APKs with the same key.
+- **Build:** `cd frontend/android && ./gradlew :wear:assembleDebug` (or `:wear:assembleRelease`,
+  then sign it as below). Install it on the watch over ADB: turn on Developer options →
+  ADB debugging / Debug over Wi-Fi on the watch, then
+  `adb connect <watch-ip>:<port>` and `adb -s <watch> install wear-release.apk`. The CI APK job
+  builds `:app` only; the watch APK is not part of a release yet.
+- **Tests:** `./gradlew :wear:testDebugUnitTest` runs `SessionTest`, which parses the phone's
+  snapshot and covers ticks, per-side rows, pending ticks and which rest a snapshot leaves running;
+  `OutboxTest` (sends kept and retried in order); and `ManifestTest` (the exact-alarm permission). The phone's side is pinned by
+  `watch-snapshot.test.js` and `watch-sync.test.js`.
+
+Worth checking on real hardware after changes here, since no test runs Play services: a workout
+started on the phone shows on the watch within a few seconds; Done on the watch ticks the set on
+the phone and the rest starts on both; the rest buzzes on the watch with its screen off; Skip on
+the watch stops the phone's rest; a tick made with the phone's screen off is on the phone when it
+is opened; after Finish the workout detail shows the heart rate.
+
 ## Prerequisites
 
 - Node 20+
@@ -278,7 +336,7 @@ Android asks you to allow installs from the browser the first time — that's st
 app outside the Play Store. Check the `.sha256` if you got the file from anywhere else.
 
 Both come out of CI: the `build:apk` job in [`.gitlab-ci.yml`](../.gitlab-ci.yml) runs
-`npm run build:mobile` and `./gradlew assembleRelease`, then `zipalign`s and signs the result
+`npm run build:mobile` and `./gradlew :app:assembleRelease`, then `zipalign`s and signs the result
 with the release key. The job runs on every push to `main` too, so the newest unreleased
 build is always one click away (signed with the same key, installs over a release):
 `https://gitlab.com/DuarteSantos8/opengym/-/jobs/artifacts/main/browse?job=build:apk`
@@ -297,7 +355,7 @@ To build and sign your own:
 
 ```sh
 cd frontend && npm run build:mobile
-cd android && ./gradlew assembleRelease            # → app/build/outputs/apk/release/app-release-unsigned.apk
+cd android && ./gradlew :app:assembleRelease       # → app/build/outputs/apk/release/app-release-unsigned.apk
 
 # one-time: create a keystore. KEEP IT — updates must be signed with the same key,
 # or Android refuses to install the new version over the old one.

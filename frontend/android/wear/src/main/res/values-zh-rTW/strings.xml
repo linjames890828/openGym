@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_workout">請在手機上開始訓練。</string>
+    <string name="all_done">所有組數已完成，請在手機上結束訓練。</string>
+    <string name="set_of">第 %1$d 組，共 %2$d 組</string>
+    <string name="warmup">熱身</string>
+    <string name="side_left">左側</string>
+    <string name="side_right">右側</string>
+    <string name="done">完成</string>
+    <string name="rest">休息</string>
+    <string name="skip">略過</string>
+    <string name="plus15">+15 秒</string>
+    <string name="prev">上一個動作</string>
+    <string name="next">下一個動作</string>
+    <string name="exercise_done">此動作已完成</string>
+    <string name="workout_started">訓練已開始，點一下在手錶上跟著做。</string>
+    <string name="heart_recording">正在記錄心率</string>
+    <string name="channel_workout">訓練</string>
+    <string name="heart_denied">心率記錄已關閉。請在手錶設定中允許身體感測器以記錄心率。</string>
+</resources>

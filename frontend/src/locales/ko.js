@@ -209,6 +209,7 @@ export default {
   'Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.': '모든 세트가 드롭세트가 됩니다: 메인 세트 후 휴식 없이 {0}회 드롭, 매번 약 {1}%씩 가벼워집니다.',
   'Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.': '모든 세트가 레스트포즈가 됩니다: 처음 {0}회를 하고, 짧은 버스트로 나눠 {1}회를 더 하며, 매번 전에 {2}초씩 쉬고 매번 대략 절반으로 줄어듭니다.',
   'Cardio logged': '유산소 기록됨',
+  '♥ {0} bpm avg · {1} max': '♥ 평균 {0} bpm · 최대 {1}',
   'Discard workout?': '운동을 버릴까요?',
   'The sets you logged in this session will be lost.': '이 세션에서 기록한 세트가 사라집니다.',
   'Superset {0} / {1}': '슈퍼세트 {0} / {1}',

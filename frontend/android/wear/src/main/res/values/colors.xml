@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The phone app's default accent (store/useStore.js), on the watch's black. -->
+    <color name="accent">#FF30D158</color>
+    <color name="on_accent">#FF000000</color>
+    <color name="muted">#FFA0A0A0</color>
+    <color name="heart">#FFFF453A</color>
+    <color name="button">#FF2C2C2E</color>
+</resources>

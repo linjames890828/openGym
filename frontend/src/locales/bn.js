@@ -240,6 +240,7 @@ export default {
   'Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.': 'প্রতিটি সেট ড্রপ সেট হবে: মূল সেটের পরে বিশ্রাম ছাড়াই {0}টি ড্রপ, প্রতিটি প্রায় {1}% হালকা।',
   'Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.': 'প্রতিটি সেট রেস্ট-পজ হবে: শুরুতে {0} রেপ, তারপর আরও {1} রেপ ছোট ছোট বার্স্টে ভাগ করে, প্রতিটির আগে {2} সে. বিশ্রাম, প্রতিবার মোটামুটি অর্ধেক করে।',
   'Cardio logged': 'কার্ডিও লগ হয়েছে',
+  '♥ {0} bpm avg · {1} max': '♥ গড় {0} bpm · সর্বোচ্চ {1}',
   'Discard workout?': 'ওয়ার্কআউট বাদ দেবেন?',
   'The sets you logged in this session will be lost.': 'এই সেশনে লগ করা সেটগুলো হারিয়ে যাবে।',
   'Superset {0} / {1}': 'সুপারসেট {0} / {1}',

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the phone app looks for before it sends anything (WatchPlugin.java on the phone). -->
+<resources>
+    <string-array name="android_wear_capabilities" translatable="false">
+        <item>opengym_wear</item>
+    </string-array>
+</resources>

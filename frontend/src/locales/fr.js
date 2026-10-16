@@ -209,6 +209,7 @@ export default {
   'Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.': 'Chaque série devient un drop-set : après la série principale, {0} baisse(s) sans repos, chacune environ {1}% plus légère.',
   'Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.': 'Chaque série devient rest-pause : {0} répétitions pour commencer, puis {1} de plus réparties en courtes rafales, avec {2}s de repos avant chacune, en diminuant environ de moitié à chaque fois.',
   'Cardio logged': 'Cardio noté',
+  '♥ {0} bpm avg · {1} max': '♥ {0} bpm en moyenne · max {1}',
   'Discard workout?': 'Abandonner la séance ?',
   'The sets you logged in this session will be lost.': 'Les séries notées dans cette session seront perdues.',
   'Superset {0} / {1}': 'Superset {0} / {1}',

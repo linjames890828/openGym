@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">openGym</string>
+    <string name="no_workout">Start a workout on your phone.</string>
+    <string name="all_done">All sets done. Finish on your phone.</string>
+    <string name="set_of">Set %1$d of %2$d</string>
+    <string name="warmup">Warm-up</string>
+    <string name="side_left">Left</string>
+    <string name="side_right">Right</string>
+    <string name="done">Done</string>
+    <string name="rest">Rest</string>
+    <string name="skip">Skip</string>
+    <string name="plus15">+15 s</string>
+    <string name="prev">Previous exercise</string>
+    <string name="next">Next exercise</string>
+    <string name="exercise_done">Exercise done</string>
+    <string name="workout_started">Workout started. Tap to follow it here.</string>
+    <string name="heart_recording">Recording heart rate</string>
+    <string name="channel_workout">Workout</string>
+    <string name="heart_denied">Heart rate is off. Allow body sensors in the watch\'s settings to record it.</string>
+</resources>

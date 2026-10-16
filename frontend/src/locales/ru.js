@@ -203,6 +203,7 @@ export default {
   'Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.': 'Каждый подход становится дроп-сетом: после основного подхода {0} снижение(й) без отдыха, каждое примерно на {1}% легче.',
   'Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.': 'Каждый подход становится рест-паузой: сначала {0} повторений, затем ещё {1}, разбитых на короткие серии, с {2} с отдыха перед каждой, каждый раз примерно вдвое меньше.',
   'Cardio logged': 'Кардио записано',
+  '♥ {0} bpm avg · {1} max': '♥ в среднем {0} уд/мин · макс. {1}',
   'Discard workout?': 'Отменить тренировку?',
   'The sets you logged in this session will be lost.': 'Подходы, записанные в этой сессии, будут потеряны.',
   'Superset {0} / {1}': 'Суперсет {0} / {1}',
